@@ -41,7 +41,7 @@ num = st.sidebar.slider("横に表示する数を選択してください", 1, 1
 current_image_type = st.sidebar.radio("表示する画像の種類を選んでください", list(image_type))
 current_lang = st.sidebar.selectbox("言語", options=list(language))
 
-tabs = st.tabs(["詳細", "一覧", "テスト"])
+tabs = st.tabs(["取得", "一覧", "テスト"])
 
 
 with tabs[0]:
