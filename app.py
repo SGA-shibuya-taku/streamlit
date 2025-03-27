@@ -1,9 +1,12 @@
 import streamlit as st
 import requests
 import pandas as pd
+from setting import gmaps
 
 if "pokemons" not in st.session_state:
     st.session_state.pokemons = {}
+if "locs" not in st.session_state:
+    st.session_state.locs = []
 
 
 image_type = {
@@ -37,15 +40,25 @@ def get_pokemon(id):
     st.session_state.pokemons[id] = pokemon
 
 
+def get_location(query):
+    loc = {}
+    result = gmaps.geocode(query)
+    loc["name"] = result[0]["address_components"][0]["short_name"]
+    loc["lat"] = result[0]["geometry"]["location"]["lat"]
+    loc["lon"] = result[0]["geometry"]["location"]["lng"]
+    if loc not in st.session_state.locs:
+        st.session_state.locs.append(loc)
+
+
 num = st.sidebar.slider("横に表示する数を選択してください", 1, 10, 4)
 current_image_type = st.sidebar.radio("表示する画像の種類を選んでください", list(image_type))
 current_lang = st.sidebar.selectbox("言語", options=list(language))
 
-tabs = st.tabs(["取得", "一覧", "テスト"])
+tabs = st.tabs(["取得", "一覧", "その他"])
 
 
 with tabs[0]:
-    st.title("ポケモン")
+    st.title("ポケモン取得")
 
     try:
         pokemon_id = st.text_input("図鑑番号を入力してください")
@@ -61,7 +74,7 @@ with tabs[0]:
 
 
 with tabs[1]:
-    st.title("取得したポケモン")
+    st.title("取得したポケモン一覧")
 
     if st.button("リセット"):
         st.session_state.pokemons.clear()
@@ -76,8 +89,14 @@ with tabs[1]:
     except Exception as e:
         st.error(f"エラー: {e}")
 
+
 with tabs[2]:
-    age = st.number_input("年齢", step=1)
-    df_pokemons = pd.DataFrame(st.session_state.pokemons).T
-    st.line_chart(df_pokemons)
-    st.write(st.session_state.pokemons)
+    query = st.text_input("場所を入力してください")
+    if query:
+        get_location(query)
+
+    df = pd.DataFrame(st.session_state.locs)
+
+    st.title("Map")
+    st.table(df)
+    st.map(df)
