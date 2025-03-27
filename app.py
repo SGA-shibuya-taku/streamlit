@@ -61,7 +61,7 @@ with tabs[0]:
     st.title("ポケモン取得")
 
     try:
-        pokemon_id = st.text_input("図鑑番号を入力してください")
+        pokemon_id = str(st.number_input("図鑑番号を入力してください", step=1))
         if pokemon_id:
             get_pokemon(pokemon_id)
             pokemon = st.session_state.pokemons[pokemon_id]
