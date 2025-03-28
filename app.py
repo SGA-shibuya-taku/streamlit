@@ -98,5 +98,5 @@ with tabs[2]:
     df = pd.DataFrame(st.session_state.locs)
 
     st.title("Map")
-    st.table(df)
+    st.write(df)
     st.map(df)
